@@ -9,7 +9,8 @@ dist
 # code coverage
 coverage
 *.lcov
-
+#Scrapped data
+dataset/
 # logs
 logs
 _.log

@@ -1,24 +1,23 @@
 export type Skill = {
-  id: string;
+  id: number;
   name: string;
   category: "frontend" | "backend" | "database" | "devops" | "soft" | "other";
 };
 
 export type UserProfile = {
-  id: string;
+  id: number;
+  uuid: string;
   name: string;
+  username: string;
   email: string;
-  avatar?: string;
-  bio?: string;
+  language: string;
+  role: "student" | "company" | "admin";
+  idGithub?: number;
   skills: Skill[];
-  preferedLocation?: string[];
-  experience?: "beginner" | "intermediate" | "advanced";
-  availability?: "full-time" | "part-time" | "flexible";
-  interests?: string[];
 };
 
 export type Company = {
-  id: string;
+  id: number;
   name: string;
   logo?: string;
   description?: string;
@@ -28,24 +27,31 @@ export type Company = {
 };
 
 export type Internship = {
-  id: string;
-  title: string;
-  company: Company;
+  id: number;
+  name: string;
   description: string;
-  requiredSkills: Skill[];
-  recommendedSkills: Skill[];
-  location: string;
-  remote: boolean;
   salary?: number;
-  posted: Date;
-  deadline?: Date;
-  duration: string;
+  link: string;
+  company: Company;
+  skills: Skill[];
   status: "open" | "closed" | "draft";
-  applications?: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Repo = {
+  id: number;
+  name: string;
+  description: string;
+  link: string;
+  skills: Skill[];
+  user: UserProfile;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type SkillGap = {
   skill: Skill;
-  prevalence: number; // Percentagem de vagas que pedem essa skill
-  userHas: boolean;
+  count: number;
+  percentage: number;
 };

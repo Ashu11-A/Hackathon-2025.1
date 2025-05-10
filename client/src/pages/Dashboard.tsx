@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   getInternships,
-  getUserProfile,
   getRecommendedInternships,
   getSkillGapAnalysis,
 } from "@/lib/localStorage";
@@ -12,53 +11,51 @@ import InternshipFilters from "@/components/dashboard/InternshipFilters";
 import SkillGapCard from "@/components/dashboard/SkillGapCard";
 import RecommendationSection from "@/components/dashboard/RecommendationSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Internship, Skill } from "@/lib/types";
+import { Internship, Skill, UserProfile } from "@/lib/types";
 import { toast } from "sonner";
+import { useApi } from "@/contexts/ApiContext";
 
 const Dashboard = () => {
-  // Estado para dados
-  const [userProfile, setUserProfile] = useState<any>(null);
+  // Data state
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [internships, setInternships] = useState<Internship[]>([]);
-  const [recommendedInternships, setRecommendedInternships] = useState<
-    Internship[]
-  >([]);
-  const [skillGaps, setSkillGaps] = useState<any[]>([]);
+  const [recommendedInternships, setRecommendedInternships] = useState<Internship[]>([]);
+  const [skillGaps, setSkillGaps] = useState<{ skill: Skill; count: number; percentage: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Estado para filtros
+  // Filter state
   const [locationFilter, setLocationFilter] = useState<string[]>([]);
-  const [remoteFilter, setRemoteFilter] = useState<string | null>(null);
-  const [skillFilter, setSkillFilter] = useState<string[]>([]);
+  const [remoteFilter, setRemoteFilter] = useState<boolean | null>(null);
+  const [skillFilter, setSkillFilter] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 5000]);
 
+  const api = useApi();
+
   useEffect(() => {
-    const loadData = () => {
+    const loadData = async () => {
       try {
         setIsLoading(true);
 
-        // Obter perfil do usuário e vagas
-        const profile = getUserProfile();
+        // Get user profile and internships
+        const profile = await api.profile();
         const allInternships = getInternships();
 
         setUserProfile(profile);
         setInternships(allInternships);
 
-        // Obter estágios recomendados
-        const recommendations = getRecommendedInternships(
-          profile,
-          allInternships
-        );
+        // Get recommended internships
+        const recommendations = getRecommendedInternships(profile, allInternships);
         setRecommendedInternships(recommendations);
 
-        // Obter análise de gap de habilidades
+        // Get skill gap analysis
         const gaps = getSkillGapAnalysis(profile.skills, allInternships);
         setSkillGaps(gaps);
 
         setIsLoading(false);
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-        toast.error("Erro ao carregar dados");
+        console.error("Error loading data:", error);
+        toast.error("Error loading data");
         setIsLoading(false);
       }
     };
@@ -66,43 +63,34 @@ const Dashboard = () => {
     loadData();
   }, []);
 
-  // Filtragem de estágios baseada nos critérios
+  // Filter internships based on criteria
   const filteredInternships = internships.filter((internship) => {
-    // Filtro de busca
+    // Search filter
     if (
       searchTerm &&
-      !internship.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !internship.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !internship.company.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) {
       return false;
     }
 
-    // Filtro de localidade
+    // Location filter
     if (
       locationFilter.length > 0 &&
-      !locationFilter.includes(internship.location)
+      !locationFilter.includes(internship.company.location)
     ) {
       return false;
     }
 
-    // Filtro de trabalho remoto
-    if (remoteFilter === "remote" && !internship.remote) {
-      return false;
-    } else if (remoteFilter === "in-person" && internship.remote) {
-      return false;
-    }
-
-    // Filtro de habilidades
+    // Skills filter
     if (skillFilter.length > 0) {
-      const internshipSkillIds = internship.requiredSkills.map(
-        (skill) => skill.id
-      );
+      const internshipSkillIds = internship.skills.map((skill) => skill.id);
       if (!skillFilter.some((id) => internshipSkillIds.includes(id))) {
         return false;
       }
     }
 
-    // Filtro de faixa salarial
+    // Salary range filter
     if (
       internship.salary &&
       (internship.salary < salaryRange[0] || internship.salary > salaryRange[1])
@@ -113,49 +101,37 @@ const Dashboard = () => {
     return true;
   });
 
-  // Filtragem de recomendações baseada nos mesmos critérios
-  const filteredRecommendations = recommendedInternships.filter(
-    (internship) => {
-      // Filtro de busca
-      if (
-        searchTerm &&
-        !internship.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !internship.company.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Filtro de localidade
-      if (
-        locationFilter.length > 0 &&
-        !locationFilter.includes(internship.location)
-      ) {
-        return false;
-      }
-
-      // Filtro de trabalho remoto
-      if (remoteFilter === "remote" && !internship.remote) {
-        return false;
-      } else if (remoteFilter === "in-person" && internship.remote) {
-        return false;
-      }
-
-      // Filtro de faixa salarial
-      if (
-        internship.salary &&
-        (internship.salary < salaryRange[0] ||
-          internship.salary > salaryRange[1])
-      ) {
-        return false;
-      }
-
-      return true;
+  // Filter recommendations based on same criteria
+  const filteredRecommendations = recommendedInternships.filter((internship) => {
+    // Search filter
+    if (
+      searchTerm &&
+      !internship.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !internship.company.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) {
+      return false;
     }
-  );
 
-  const handleSkillFilterChange = (skills: string[]) => {
+    // Location filter
+    if (
+      locationFilter.length > 0 &&
+      !locationFilter.includes(internship.company.location)
+    ) {
+      return false;
+    }
+
+    // Salary range filter
+    if (
+      internship.salary &&
+      (internship.salary < salaryRange[0] || internship.salary > salaryRange[1])
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const handleSkillFilterChange = (skills: number[]) => {
     setSkillFilter(skills);
   };
 
@@ -163,8 +139,8 @@ const Dashboard = () => {
     setLocationFilter(locations);
   };
 
-  const handleRemoteFilterChange = (option: string | null) => {
-    setRemoteFilter(option);
+  const handleRemoteFilterChange = (remote: boolean | null) => {
+    setRemoteFilter(remote);
   };
 
   const handleSearchChange = (term: string) => {
@@ -187,7 +163,7 @@ const Dashboard = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-8">
-          <p>Carregando dados do dashboard...</p>
+          <p>Loading dashboard data...</p>
         </div>
       </DashboardLayout>
     );
@@ -196,7 +172,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <DashboardHeader
-        title="Painel de Vagas"
+        title="Internship Dashboard"
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
       />
@@ -205,8 +181,8 @@ const Dashboard = () => {
         <div className="col-span-1 lg:col-span-2">
           <RecommendationSection
             recommendations={recommendedInternships.slice(0, 3)}
-            title="Recomendado para você"
-            description="Com base no seu perfil, estas são as vagas que mais combinam com você."
+            title="Recommended for you"
+            description="Based on your profile, these are the internships that best match your skills."
           />
         </div>
         <div className="col-span-1">
@@ -230,24 +206,24 @@ const Dashboard = () => {
         </div>
 
         <div className="col-span-1 lg:col-span-3">
-          <Tabs defaultValue="todas" className="w-full">
+          <Tabs defaultValue="all" className="w-full">
             <TabsList className="mb-4">
-              <TabsTrigger value="todas">
-                Todas as Vagas ({filteredInternships.length})
+              <TabsTrigger value="all">
+                All Internships ({filteredInternships.length})
               </TabsTrigger>
-              <TabsTrigger value="recomendadas">
-                Recomendadas ({filteredRecommendations.length})
+              <TabsTrigger value="recommended">
+                Recommended ({filteredRecommendations.length})
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="todas" className="mt-0">
+            <TabsContent value="all" className="mt-0">
               <InternshipList
                 internships={filteredInternships}
                 userSkills={userProfile.skills}
               />
             </TabsContent>
 
-            <TabsContent value="recomendadas" className="mt-0">
+            <TabsContent value="recommended" className="mt-0">
               <InternshipList
                 internships={filteredRecommendations}
                 userSkills={userProfile.skills}

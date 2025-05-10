@@ -1,7 +1,7 @@
 {
   "name": "base-fastify",
   "type": "module",
-  "workspaces": ["server", "packages/*"],
+  "workspaces": ["client", "server", "packages/*"],
   "scripts": {
     "dev": "cd server && bun run dev"
   },
@@ -11,5 +11,10 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "js-cookie": "^3.0.5",
+    "zustand": "^5.0.4"
   }
 }

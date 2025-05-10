@@ -4,7 +4,7 @@ import {
   internships as defaultInternships,
 } from "./data";
 
-// Chaves para o localStorage
+// Keys for localStorage
 const KEYS = {
   USER_PROFILE: "conecta-vaga-user-profile",
   INTERNSHIPS: "conecta-vaga-internships",
@@ -12,11 +12,11 @@ const KEYS = {
   AUTH: "conecta-vaga-auth-status",
 };
 
-// Tipo para aplicações do usuário
+// Type for user applications
 export type UserApplication = {
-  id: string;
-  internshipId: string;
-  userId: string;
+  id: number;
+  internshipId: number;
+  userId: number;
   status: "pending" | "interview" | "approved" | "rejected";
   appliedAt: Date;
   coverLetter?: string;
@@ -28,10 +28,10 @@ export type UserApplication = {
   }[];
 };
 
-// Inicializa o localStorage com dados default, se não existirem
+// Initialize localStorage with default data if it doesn't exist
 export const initializeLocalStorage = () => {
   try {
-    // Inicializar perfil de usuário
+    // Initialize user profile
     if (!localStorage.getItem(KEYS.USER_PROFILE)) {
       localStorage.setItem(
         KEYS.USER_PROFILE,
@@ -39,7 +39,7 @@ export const initializeLocalStorage = () => {
       );
     }
 
-    // Inicializar vagas
+    // Initialize internships
     if (!localStorage.getItem(KEYS.INTERNSHIPS)) {
       localStorage.setItem(
         KEYS.INTERNSHIPS,
@@ -47,21 +47,21 @@ export const initializeLocalStorage = () => {
       );
     }
 
-    // Inicializar candidaturas
+    // Initialize applications
     if (!localStorage.getItem(KEYS.APPLICATIONS)) {
       localStorage.setItem(KEYS.APPLICATIONS, JSON.stringify([]));
     }
 
-    // Inicializar status de autenticação
+    // Initialize auth status
     if (!localStorage.getItem(KEYS.AUTH)) {
       localStorage.setItem(KEYS.AUTH, JSON.stringify({ isLoggedIn: false }));
     }
   } catch (error) {
-    console.error("Erro ao inicializar localStorage:", error);
+    console.error("Error initializing localStorage:", error);
   }
 };
 
-// Verificar se o usuário está logado
+// Check if user is logged in
 export const isLoggedIn = (): boolean => {
   try {
     const authData = localStorage.getItem(KEYS.AUTH);
@@ -71,183 +71,148 @@ export const isLoggedIn = (): boolean => {
     }
     return false;
   } catch (error) {
-    console.error("Erro ao verificar login:", error);
+    console.error("Error checking login status:", error);
     return false;
   }
 };
 
-// Fazer login
-export const login = (email: string, password: string): boolean => {
-  try {
-    // Em uma aplicação real, haveria validação das credenciais
-    // Para esta demo, qualquer login é bem-sucedido
-    localStorage.setItem(KEYS.AUTH, JSON.stringify({ isLoggedIn: true }));
-    return true;
-  } catch (error) {
-    console.error("Erro ao fazer login:", error);
-    return false;
-  }
-};
-
-// Fazer logout
+// Logout
 export const logout = (): void => {
   try {
     localStorage.setItem(KEYS.AUTH, JSON.stringify({ isLoggedIn: false }));
   } catch (error) {
-    console.error("Erro ao fazer logout:", error);
+    console.error("Error during logout:", error);
   }
 };
 
-// Obter perfil do usuário
-export const getUserProfile = (): UserProfile => {
-  try {
-    const profileData = localStorage.getItem(KEYS.USER_PROFILE);
-    if (profileData) {
-      const profile = JSON.parse(profileData);
-
-      // Converter strings de data para objetos Date
-      return profile;
-    }
-    return defaultUserProfile;
-  } catch (error) {
-    console.error("Erro ao obter perfil do usuário:", error);
-    return defaultUserProfile;
-  }
-};
-
-// Atualizar perfil do usuário
+// Update user profile
 export const updateUserProfile = (profile: UserProfile): void => {
   try {
     localStorage.setItem(KEYS.USER_PROFILE, JSON.stringify(profile));
   } catch (error) {
-    console.error("Erro ao atualizar perfil do usuário:", error);
+    console.error("Error updating user profile:", error);
   }
 };
 
-// Obter todas as vagas
+// Get user profile
+export const getUserProfile = (): UserProfile => {
+  try {
+    const profileData = localStorage.getItem(KEYS.USER_PROFILE);
+    if (profileData) {
+      return JSON.parse(profileData);
+    }
+    return defaultUserProfile;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return defaultUserProfile;
+  }
+};
+
+// Get all internships
 export const getInternships = (): Internship[] => {
   try {
     const internshipsData = localStorage.getItem(KEYS.INTERNSHIPS);
     if (internshipsData) {
       const parsedInternships = JSON.parse(internshipsData);
 
-      // Converter strings de data para objetos Date
-      return parsedInternships.map((internship: any) => ({
+      // Convert date strings to Date objects
+      return parsedInternships.map((internship: Internship) => ({
         ...internship,
-        posted: new Date(internship.posted),
-        deadline: internship.deadline
-          ? new Date(internship.deadline)
-          : undefined,
+        createdAt: new Date(internship.createdAt),
+        updatedAt: new Date(internship.updatedAt),
       }));
     }
     return defaultInternships;
   } catch (error) {
-    console.error("Erro ao obter vagas:", error);
+    console.error("Error getting internships:", error);
     return defaultInternships;
   }
 };
 
-// Obter detalhes de uma vaga específica
-export const getInternshipById = (id: string): Internship | undefined => {
+// Get internship by ID
+export const getInternshipById = (id: number): Internship | undefined => {
   try {
     const internships = getInternships();
     return internships.find((internship) => internship.id === id);
   } catch (error) {
-    console.error("Erro ao obter vaga por ID:", error);
+    console.error("Error getting internship by ID:", error);
     return undefined;
   }
 };
 
-// Obter todas as candidaturas do usuário
+// Get all user applications
 export const getUserApplications = (): UserApplication[] => {
   try {
     const applicationsData = localStorage.getItem(KEYS.APPLICATIONS);
     if (applicationsData) {
       const parsedApplications = JSON.parse(applicationsData);
 
-      // Converter strings de data para objetos Date
-      return parsedApplications.map((app: any) => ({
+      // Convert date strings to Date objects
+      return parsedApplications.map((app: UserApplication) => ({
         ...app,
         appliedAt: new Date(app.appliedAt),
       }));
     }
     return [];
   } catch (error) {
-    console.error("Erro ao obter candidaturas do usuário:", error);
+    console.error("Error getting user applications:", error);
     return [];
   }
 };
 
-// Criar uma nova candidatura
+// Create new application
 export const createApplication = (
-  internshipId: string,
+  internshipId: number,
   coverLetter?: string
 ): UserApplication | null => {
   try {
     const userApplications = getUserApplications();
     const profile = getUserProfile();
 
-    // Verificar se o usuário já se candidatou a esta vaga
+    // Check if user already applied to this internship
     const existingApplication = userApplications.find(
       (app) => app.internshipId === internshipId && app.userId === profile.id
     );
 
     if (existingApplication) {
-      console.warn("Usuário já se candidatou a esta vaga");
+      console.warn("User already applied to this internship");
       return null;
     }
 
-    // Criar nova candidatura
+    // Create new application
     const newApplication: UserApplication = {
-      id: `app-${Date.now()}`,
+      id: Date.now(),
       internshipId,
       userId: profile.id,
       status: "pending",
       appliedAt: new Date(),
       coverLetter,
-      progress: 20, // Inicia com 20% (inscrição concluída)
+      progress: 20, // Start with 20% (application completed)
       steps: [
-        { name: "Inscrição", completed: true, current: false },
-        { name: "Análise Curricular", completed: false, current: true },
-        { name: "Teste Técnico", completed: false, current: false },
-        { name: "Entrevista RH", completed: false, current: false },
-        { name: "Entrevista Técnica", completed: false, current: false },
+        { name: "Application", completed: true, current: false },
+        { name: "Resume Review", completed: false, current: true },
+        { name: "Technical Test", completed: false, current: false },
+        { name: "HR Interview", completed: false, current: false },
+        { name: "Technical Interview", completed: false, current: false },
       ],
     };
 
-    // Atualizar a lista de candidaturas
+    // Update applications list
     const updatedApplications = [...userApplications, newApplication];
     localStorage.setItem(
       KEYS.APPLICATIONS,
       JSON.stringify(updatedApplications)
     );
 
-    // Atualizar contador de candidaturas da vaga
-    const internships = getInternships();
-    const internshipIndex = internships.findIndex((i) => i.id === internshipId);
-
-    if (internshipIndex !== -1) {
-      const updatedInternships = [...internships];
-      const currentApplications =
-        updatedInternships[internshipIndex].applications || 0;
-      updatedInternships[internshipIndex].applications =
-        currentApplications + 1;
-
-      localStorage.setItem(
-        KEYS.INTERNSHIPS,
-        JSON.stringify(updatedInternships)
-      );
-    }
-
     return newApplication;
   } catch (error) {
-    console.error("Erro ao criar candidatura:", error);
+    console.error("Error creating application:", error);
     return null;
   }
 };
 
-// Verificar se o usuário já se candidatou a uma vaga
-export const hasApplied = (internshipId: string): boolean => {
+// Check if user has applied to an internship
+export const hasApplied = (internshipId: number): boolean => {
   try {
     const userApplications = getUserApplications();
     const profile = getUserProfile();
@@ -256,23 +221,23 @@ export const hasApplied = (internshipId: string): boolean => {
       (app) => app.internshipId === internshipId && app.userId === profile.id
     );
   } catch (error) {
-    console.error("Erro ao verificar candidatura:", error);
+    console.error("Error checking application status:", error);
     return false;
   }
 };
 
-// Obter uma candidatura específica
-export const getApplicationById = (id: string): UserApplication | undefined => {
+// Get application by ID
+export const getApplicationById = (id: number): UserApplication | undefined => {
   try {
     const applications = getUserApplications();
     return applications.find((app) => app.id === id);
   } catch (error) {
-    console.error("Erro ao obter candidatura por ID:", error);
+    console.error("Error getting application by ID:", error);
     return undefined;
   }
 };
 
-// Obter estágios recomendados com base no perfil do usuário
+// Get recommended internships based on user profile
 export const getRecommendedInternships = (
   userProfile: UserProfile,
   internships: Internship[]
@@ -280,43 +245,31 @@ export const getRecommendedInternships = (
   try {
     const userSkillIds = userProfile.skills.map((skill) => skill.id);
 
-    // Pontuação para cada estágio com base em habilidades do usuário
+    // Score each internship based on user skills
     const scoredInternships = internships.map((internship) => {
       let score = 0;
 
-      // Maior pontuação para habilidades obrigatórias que o usuário possui
-      internship.requiredSkills.forEach((skill) => {
+      // Higher score for required skills that user has
+      internship.skills.forEach((skill) => {
         if (userSkillIds.includes(skill.id)) {
           score += 3;
         }
       });
 
-      // Pontuação menor para habilidades recomendadas que o usuário possui
-      internship.recommendedSkills.forEach((skill) => {
-        if (userSkillIds.includes(skill.id)) {
-          score += 1;
-        }
-      });
-
-      // Bonus para vagas remotas (se usuário tiver preferência por remoto)
-      if (internship.remote && userProfile.preferences?.remote) {
-        score += 1;
-      }
-
       return { internship, score };
     });
 
-    // Ordenar por pontuação e retornar apenas os estágios
+    // Sort by score and return only internships
     return scoredInternships
       .sort((a, b) => b.score - a.score)
       .map((item) => item.internship);
   } catch (error) {
-    console.error("Erro ao obter estágios recomendados:", error);
+    console.error("Error getting recommended internships:", error);
     return [];
   }
 };
 
-// Analisar lacunas de habilidades (skill gaps) do usuário
+// Analyze skill gaps
 export const getSkillGapAnalysis = (
   userSkills: Skill[],
   internships: Internship[]
@@ -324,38 +277,24 @@ export const getSkillGapAnalysis = (
   try {
     const userSkillIds = userSkills.map((skill) => skill.id);
     const skillGapMap = new Map<string, { skill: Skill; count: number }>();
-    let totalVacancies = internships.length;
+    const totalVacancies = internships.length;
 
-    // Contar ocorrências de cada habilidade em vagas que o usuário não possui
+    // Count occurrences of each skill in internships that user doesn't have
     internships.forEach((internship) => {
-      // Verificar habilidades obrigatórias
-      internship.requiredSkills.forEach((skill) => {
+      internship.skills.forEach((skill) => {
         if (!userSkillIds.includes(skill.id)) {
-          if (skillGapMap.has(skill.id)) {
-            const current = skillGapMap.get(skill.id)!;
+          if (skillGapMap.has(skill.id.toString())) {
+            const current = skillGapMap.get(skill.id.toString())!;
             current.count += 1;
-            skillGapMap.set(skill.id, current);
+            skillGapMap.set(skill.id.toString(), current);
           } else {
-            skillGapMap.set(skill.id, { skill, count: 1 });
-          }
-        }
-      });
-
-      // Verificar habilidades recomendadas (com peso menor)
-      internship.recommendedSkills.forEach((skill) => {
-        if (!userSkillIds.includes(skill.id)) {
-          if (skillGapMap.has(skill.id)) {
-            const current = skillGapMap.get(skill.id)!;
-            current.count += 0.5; // Peso menor para habilidades recomendadas
-            skillGapMap.set(skill.id, current);
-          } else {
-            skillGapMap.set(skill.id, { skill, count: 0.5 });
+            skillGapMap.set(skill.id.toString(), { skill, count: 1 });
           }
         }
       });
     });
 
-    // Converter o mapa para array e calcular percentuais
+    // Convert map to array and calculate percentages
     const skillGaps = Array.from(skillGapMap.values())
       .map((item) => ({
         skill: item.skill,
@@ -364,12 +303,12 @@ export const getSkillGapAnalysis = (
       }))
       .sort((a, b) => b.percentage - a.percentage);
 
-    return skillGaps.slice(0, 5); // Retornar as 5 principais lacunas
+    return skillGaps.slice(0, 5); // Return top 5 gaps
   } catch (error) {
-    console.error("Erro ao analisar lacunas de habilidades:", error);
+    console.error("Error analyzing skill gaps:", error);
     return [];
   }
 };
 
-// Inicializar o localStorage quando o módulo for importado
+// Initialize localStorage when module is imported
 initializeLocalStorage();

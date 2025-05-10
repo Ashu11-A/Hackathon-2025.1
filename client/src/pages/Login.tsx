@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -10,42 +9,43 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { useApi } from "@/contexts/ApiContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { login } from "@/lib/localStorage";
+import { z } from "zod";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve conter pelo menos 6 caracteres"),
-});
+  password: z.string().min(6, "Senha deve conter pelo menos 6 caracteres")
+})
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const api = useApi();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      password: "",
-    },
-  });
+      password: ""
+    }
+  })
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      // Fazer login usando a função do localStorage
-      const success = login(data.email, data.password);
+      // Usar a instância da API do contexto
+      const request = await api.login({ email: data.email, password: data.password })
 
-      if (success) {
+      if (request) {
         toast.success("Login realizado com sucesso!");
-        // Redirecionar para o dashboard após login
         setTimeout(() => navigate("/dashboard"), 1000);
       } else {
         toast.error("Erro ao fazer login. Verifique suas credenciais.");

@@ -1,5 +1,6 @@
 import teste from '../../routers/teste.js'
 import Home from '../../routers/index.js'
+import chat from '../../routers/chat/send.js'
 import EditUser from '../../routers/user/user.post.js'
 import Getuserprofile from '../../routers/user/profile.js'
 import UserRegistration from '../../routers/auth/signup.js'
@@ -10,11 +11,11 @@ import AuthWithGithub from '../../routers/auth/github.js'
 import ListInternship from '../../routers/internship/list.js'
 import CreateInternship from '../../routers/internship/create.js'
 import RegisterAllReposinDatabase from '../../routers/github/register.js'
-import chat from '../../routers/chat/send.js'
 
 export const routers = {
   '/teste': teste,
   '/': Home,
+  '/chat/send': chat,
   '/user/user.post': EditUser,
   '/user/profile': Getuserprofile,
   '/auth/signup': UserRegistration,
@@ -24,6 +25,5 @@ export const routers = {
   '/auth/github/callback': AuthWithGithub,
   '/internship/list': ListInternship,
   '/internship/create': CreateInternship,
-  '/github/register': RegisterAllReposinDatabase,
-  '/chat/send': chat
+  '/github/register': RegisterAllReposinDatabase
 }

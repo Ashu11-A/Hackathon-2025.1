@@ -2,13 +2,8 @@ import { compare, hash } from 'bcryptjs'
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, type Relation, UpdateDateColumn } from 'typeorm'
 import { Hidden } from '../hooks/hidden.js'
 import { Auth } from './Auth.js'
+import { Role } from '../enums.js'
 
-export enum Role {
-  Administrator = 'administrator',
-  Student = 'student',
-  Teacher = 'teacher',
-  Employer = 'employer'
-}
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {

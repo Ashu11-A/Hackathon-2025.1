@@ -1,9 +1,9 @@
 import 'dotenv/config'
 import { glob } from 'glob'
+import mysql from 'mysql2/promise'
 import { dirname, join } from 'path'
 import { DataSource } from 'typeorm'
 import { fileURLToPath } from 'url'
-import mysql from 'mysql2/promise'
 
 const path = dirname(fileURLToPath(import.meta.url))
 
@@ -43,9 +43,13 @@ async function getDatabase (database: 'mysql' | 'sqljs' = 'sqljs') {
 }
 
 export default new DataSource({
-  ...(await getDatabase(process.env['DATABASE_TYPE'] as "mysql" | "sqljs" | undefined)),
+  // ...(await getDatabase(process.env['DATABASE_TYPE'] as "mysql" | "sqljs" | undefined)),
+  type: 'sqljs',
+  autoSave: true,
+  useLocalForage: true,
+  location: String(process.env['DATABASE_FILE']) || 'database.wm',
   synchronize: true,
   logging: true,
-  entities: await glob(join(path, 'entity', '**/*.{js,ts}')),
-  migrations: await glob(join(path, 'migration', '**/*.{js,ts}')),
+  entities: [join(path, 'entity', '**', '*.{js,ts}')],
+  migrations: [join(path, 'migration', '**', '*.{js,ts}')],
 })

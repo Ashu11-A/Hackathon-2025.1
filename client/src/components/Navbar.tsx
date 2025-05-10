@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, User } from "lucide-react";
-import { isLoggedIn } from "@/lib/localStorage";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -10,7 +9,7 @@ const Navbar = () => {
 
   useEffect(() => {
     // Verificar status de login
-    setUserLoggedIn(isLoggedIn());
+    // setUserLoggedIn(isLoggedIn());
 
     const handleScroll = () => {
       const isScrolled = window.scrollY > 20;

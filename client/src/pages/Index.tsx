@@ -1,12 +1,12 @@
 
-import React, { useEffect } from 'react';
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import ProblemSection from '@/components/ProblemSection';
-import SolutionSection from '@/components/SolutionSection';
-import HowItWorksSection from '@/components/HowItWorksSection';
 import AboutSection from '@/components/AboutSection';
 import Footer from '@/components/Footer';
+import HeroSection from '@/components/HeroSection';
+import HowItWorksSection from '@/components/HowItWorksSection';
+import Navbar from '@/components/Navbar';
+import ProblemSection from '@/components/ProblemSection';
+import SolutionSection from '@/components/SolutionSection';
+import { useEffect } from 'react';
 
 const Index = () => {
   useEffect(() => {

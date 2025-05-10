@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { UserProfile } from "./types";
 
 export class API {
+  public isLoggedIn = false
   public options: LoginData = {
     accessToken: {
       token: '',
@@ -32,6 +33,7 @@ export class API {
             expireDate: new Date(tokens.refreshToken.expireDate)
           }
         }
+        this.isLoggedIn = true
       } catch (error) {
         console.error('Failed to load saved tokens:', error)
       }
@@ -54,6 +56,8 @@ export class API {
     })
 
     if (result.status !== 200) return null
+
+    this.isLoggedIn = true
 
     this.options = result.data.data as LoginData
     // Save tokens to cookies with expiration

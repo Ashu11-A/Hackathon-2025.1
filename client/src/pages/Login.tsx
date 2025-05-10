@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useApi } from "@/contexts/ApiContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -29,7 +29,14 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const api = useApi();
+
+  useEffect(() => {
+    if (api.isLoggedIn) {
+      navigate("/dashboard");
+    }
+  }, [isLoggedIn, api.isLoggedIn, navigate])
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

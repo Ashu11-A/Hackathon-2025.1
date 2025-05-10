@@ -67,26 +67,26 @@ const AboutSection = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                  <div className="font-semibold">Ana Silva</div>
-                  <div className="text-sm text-gray-500">Desenvolvedora</div>
+                  <div className="font-semibold">Guilherme Montalvão</div>
+                  <div className="text-sm text-gray-500">Eng. Software</div>
                 </div>
 
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                  <div className="font-semibold">João Santos</div>
-                  <div className="text-sm text-gray-500">Design UX</div>
+                  <div className="font-semibold">Arthur Silva</div>
+                  <div className="text-sm text-gray-500">Cien. Computação</div>
                 </div>
 
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                  <div className="font-semibold">Pedro Costa</div>
-                  <div className="text-sm text-gray-500">Machine Learning</div>
+                  <div className="font-semibold">Igor Andrade</div>
+                  <div className="text-sm text-gray-500">Cien. Computação</div>
                 </div>
 
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                  <div className="font-semibold">Carla Mendes</div>
-                  <div className="text-sm text-gray-500">Gestão do Projeto</div>
+                  <div className="font-semibold">Matheus Biolowons</div>
+                  <div className="text-sm text-gray-500">Eng. Software</div>
                 </div>
               </div>
             </div>

@@ -1,15 +1,11 @@
 export type TProcessEnv = {
-  PRODUCTION: boolean
+  PRODUCTION: string
   PORT: number
   REDIS_HOST: string
   REDIS_PORT: number
   REDIS_PASSWORD: number
+  DATABASE_FILE: string
   DATABASE_TYPE: string
-  DATABASE_HOST: string
-  DATABASE_PORT: number
-  DATABASE_USERNAME: string
-  DATABASE_PASSWORD: string
-  DATABASE_NAME: string
   JWT_TOKEN: string
   JWT_EXPIRE: string
   REFRESH_TOKEN: string

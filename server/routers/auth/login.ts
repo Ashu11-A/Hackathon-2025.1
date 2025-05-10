@@ -18,7 +18,7 @@ const getCookieOptions = (expirationDate: Date) => ({
   domain: process.env.PRODUCTION ? process.env.FRONT_END_URL : undefined,
 })
 
-const router = new Router({
+export default new Router({
   name: 'UserLogin',
   description:
     'Handles user authentication by validating credentials and issuing JWT tokens for secure access',
@@ -92,5 +92,3 @@ const router = new Router({
     },
   }
 })
-
-export default router

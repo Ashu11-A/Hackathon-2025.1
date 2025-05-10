@@ -5,7 +5,9 @@ import { Auth } from './Auth.js'
 
 export enum Role {
   Administrator = 'administrator',
-  User = 'user'
+  Student = 'student',
+  Teacher = 'teacher',
+  Employer = 'employer'
 }
 
 @Entity({ name: 'users' })
@@ -25,7 +27,7 @@ export class User extends BaseEntity {
     language!: string
   @Hidden({ type: 'text' })
     password!: string
-  @Column({ type: 'varchar', default: Role.User, nullable: true })
+  @Column({ type: 'varchar', default: Role.Student, nullable: true })
     role!: Role
 
   @OneToMany(() => Auth, (auth) => auth.user)

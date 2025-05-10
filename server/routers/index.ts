@@ -7,5 +7,5 @@ export default new Router({
     get({ reply }) {
       return reply.code(200).send({ message: 'hello world', data: {} })
     }
-  },
+  }
 })

@@ -8,3 +8,5 @@ export const storage = process.env.STORAGE_TYPE === 'memory'
   : new LocalStorage({
     storagePath: process.env.LOCAL_STORAGE_PATH ?? join(cwd, 'storage')
   })
+
+import '../routers/chat'

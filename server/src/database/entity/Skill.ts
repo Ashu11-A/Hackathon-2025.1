@@ -13,8 +13,6 @@ export class Skill extends BaseEntity {
     /** Isso vai ser basicamente o name mas em lowercase para ter um ID unico no banco de dados */
     @Column({ type: 'text', unique: true })
       value!: string
-    @Column({ type: 'text' })
-      link!: string
 
     @ManyToMany(() => Internship, (internship) => internship.skills)
     @JoinTable()

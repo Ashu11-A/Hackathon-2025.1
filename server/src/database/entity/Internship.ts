@@ -13,13 +13,13 @@ export class Internship extends BaseEntity {
       description!: string
     @Column({ type: 'int', nullable: true })
       salary?: number
-    @Column({ type: 'text' })
+    @Column({ type: 'text', unique: true })
       link!: string
 
     @ManyToMany(() => Skill, (skills) => skills.internships)
       skills!: Relation<Skill[]>
-    @ManyToOne(() => Company, (company) => company.internships)
-      company!: Relation<Company>
+    @ManyToOne(() => Company, (company) => company.internships, { nullable: true })
+      company?: Relation<Company>
 
     @UpdateDateColumn()
       updatedAt!: Date

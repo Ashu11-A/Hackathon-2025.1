@@ -1,12 +1,13 @@
 import { fastifyCompress } from '@fastify/compress'
+import fastifyCookie from '@fastify/cookie'
+import fastifyCors from '@fastify/cors'
 import { fastifyMultipart } from '@fastify/multipart'
+import oauthPlugin from '@fastify/oauth2'
+import fastifySession from '@fastify/session'
+import fastifyWebsocket from '@fastify/websocket'
 import fastify, { type FastifyInstance } from 'fastify'
 import fastifyIO from 'fastify-socket.io'
 import { constants as zlibConstants } from 'zlib'
-import oauthPlugin from '@fastify/oauth2'
-import fastifyCookie from '@fastify/cookie'
-import fastifySession from '@fastify/session'
-import fastifyCors from '@fastify/cors'
 
 import { BearerStrategy } from '@/strategies/BearerStrategy.js'
 import { CookiesStrategy } from '@/strategies/CookiesStrategy.js'
@@ -38,9 +39,9 @@ export class Fastify {
         },
       },
     })
-    .register(fastifyCors, {
-      origin: process.env.FRONT_END_URL
-    })
+      .register(fastifyCors, {
+        origin: process.env.FRONT_END_URL
+      })
       .register(fastifyCompress, {
         logLevel: 'debug',
         brotliOptions: {
@@ -87,6 +88,7 @@ export class Fastify {
         startRedirectPath: '/auth/github',
         callbackUri: 'http://localhost:4000/auth/github/callback',
       })
+      .register(fastifyWebsocket)
       .decorate('auth', {
         strategies: [
           BearerStrategy,

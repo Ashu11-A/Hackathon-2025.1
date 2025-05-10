@@ -1,9 +1,9 @@
-import chalk from "chalk"
+import chalk from 'chalk'
 import { writeFile } from 'fs/promises'
-import { glob } from "glob"
-import { join } from "path"
-import { MethodType, type GenericRouter } from "./types/router"
-import { formatPath } from "./registers/routers"
+import { glob } from 'glob'
+import { join } from 'path'
+import { MethodType, type GenericRouter } from './types/router'
+import { formatPath } from './registers/routers'
 
 class Build {
   private readonly basePath = join(import.meta.dirname, '../routers')
@@ -34,7 +34,7 @@ class Build {
 
   private generateRouterImports(): string {
     const imports: string[] = []
-    const exportsContent: string[] = [];
+    const exportsContent: string[] = []
 
     for (const [fileName, router] of this.routers.entries()) {
       const normalizedPath = join('routers', fileName).replace(/\\/g, '/')
@@ -65,7 +65,7 @@ class Build {
     for (const [fileName, router] of this.routers.entries()) {
       const normalizedPath = join('routers', fileName).replace(/\\/g, '/')
 
-      imports.push(`import ${router.name} from '../../${normalizedPath}'`);
+      imports.push(`import ${router.name} from '../../${normalizedPath}'`)
       if (!router.path) continue
 
       const methods: string[] = []
@@ -91,7 +91,7 @@ class Build {
       if (methods.length > 0) {
         routes.push(`'${router.path}': {
     ${methods.join(',\n  ')}
-  }`);
+  }`)
       }
     }
 

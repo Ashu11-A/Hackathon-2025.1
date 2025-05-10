@@ -18,7 +18,7 @@ export class Auth extends BaseEntity {
     parent!: Auth | null
   @TreeChildren({ cascade: true })
     children!: Auth[]
-  @ManyToOne(() => User, (user) => user.auths)
+  @ManyToOne(() => User, (user) => user.auths, { nullable: true })
     user!: Relation<User>
     
   @Column({ type: 'date' })

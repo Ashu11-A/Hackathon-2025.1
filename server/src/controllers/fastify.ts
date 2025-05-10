@@ -1,12 +1,16 @@
 import { fastifyCompress } from '@fastify/compress'
-import { fastifyCookie } from '@fastify/cookie'
 import { fastifyMultipart } from '@fastify/multipart'
 import fastify, { type FastifyInstance } from 'fastify'
 import fastifyIO from 'fastify-socket.io'
 import { constants as zlibConstants } from 'zlib'
+import oauthPlugin from '@fastify/oauth2'
+import fastifyCookie from '@fastify/cookie'
+import fastifySession from '@fastify/session'
+import fastifyCors from '@fastify/cors'
 
 import { BearerStrategy } from '@/strategies/BearerStrategy.js'
 import { CookiesStrategy } from '@/strategies/CookiesStrategy.js'
+import { GithubStrategy } from '@/strategies/GithubStrategy'
 
 interface Options {
   host: string
@@ -22,7 +26,7 @@ export class Fastify {
     const cookieToken = process.env['COOKIE_TOKEN']
     if (cookieToken === undefined) throw new Error('Cookie token are undefined')
 
-      Fastify.server = fastify({
+    Fastify.server = fastify({
       logger: this.options.log === undefined ? undefined : {
         transport: {
           target: 'pino-pretty',
@@ -34,7 +38,10 @@ export class Fastify {
         },
       },
     })
-    .register(fastifyCompress, {
+    .register(fastifyCors, {
+      origin: process.env.FRONT_END_URL
+    })
+      .register(fastifyCompress, {
         logLevel: 'debug',
         brotliOptions: {
           params: {
@@ -63,10 +70,28 @@ export class Fastify {
           fn(strategy.error?.message, false)
         },
       })
+      .register(fastifySession, {
+        secret: process.env.SESSION_SECRET,
+        cookie: { secure: false /* em produção use HTTPS */ },
+      })
+      .register(oauthPlugin, {
+        name: 'githubOAuth2',
+        scope: ['read:user', 'repo'],   // scopes que você precisa
+        credentials: {
+          client: {
+            id: process.env.GH_CLIENT_ID!,
+            secret: process.env.GH_CLIENT_SECRET!,
+          },
+          auth: oauthPlugin.GITHUB_CONFIGURATION,
+        },
+        startRedirectPath: '/auth/github',
+        callbackUri: 'http://localhost:4000/auth/github/callback',
+      })
       .decorate('auth', {
         strategies: [
           BearerStrategy,
-          CookiesStrategy
+          CookiesStrategy,
+          GithubStrategy
         ]
       })
 

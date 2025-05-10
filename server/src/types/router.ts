@@ -1,8 +1,9 @@
 import type { Router } from '@/controllers/router'
-import { Role, User } from '@/database/entity/User.js'
+import {  User } from '@/database/entity/User.js'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { z, ZodError, ZodTypeAny } from 'zod'
 import type { FastifyCompressRouteOptions } from '@fastify/compress'
+import type { Role } from '@/database/enums'
 
 /*
  * Enum for HTTP method types.
@@ -72,7 +73,7 @@ export type RouteHandler<
   TData,
   StatusCodes extends ReplyKeys
 > (args: {
-  request: Authenticate extends true | Role | Role[] ? CustomInstanceFastify : Omit<CustomInstanceFastify, 'user'>
+  request: FastifyRequest, // Authenticate extends true | Role | Role[] ? CustomInstanceFastify : Omit<CustomInstanceFastify, 'user'>
   reply: TypedReply<TData, StatusCodes>;
   schema: ZodInferredData<Method, Schema>;
 }) => unknown

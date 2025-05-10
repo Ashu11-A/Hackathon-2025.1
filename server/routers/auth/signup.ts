@@ -24,6 +24,8 @@ export default new Router({
           message: 'A user with the provided email or username already exists. Please use different credentials.',
         })
       }
+
+      schema.email = schema.email.toLowerCase()
   
       const user = await (await User.create({
         ...schema,

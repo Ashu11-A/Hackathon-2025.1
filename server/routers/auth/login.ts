@@ -10,12 +10,12 @@ import { z } from 'zod'
  * Retorna as opções para configuração dos cookies
  * @param expirationDate Data de expiração do cookie
  */
-const getCookieOptions = (expirationDate: Date) => ({
+export const getCookieOptions = (expirationDate: Date) => ({
   path: '/',
   expires: expirationDate,
   httpOnly: true,
-  secure: process.env.PRODUCTION,
-  domain: process.env.PRODUCTION ? process.env.FRONT_END_URL : undefined,
+  secure: false,// process.env.PRODUCTION,
+  domain: undefined // process.env.PRODUCTION ? process.env.FRONT_END_URL : undefined,
 })
 
 export default new Router({
@@ -33,8 +33,10 @@ export default new Router({
       const user = await userRepository
         .createQueryBuilder('user')
         .addSelect('user.password')
-        .where('user.email = :email', { email: schema.email })
+        .where('user.email = :email', { email: schema.email.toLowerCase() })
         .getOne()
+      console.log(user)
+      console.log(schema)
       if (!user) return reply.code(403).send({ message: 'Invalid email or password' })
   
       const valid = await user.validatePassword(schema.password)
@@ -69,7 +71,6 @@ export default new Router({
         user,
         expireAt: moment(expirationRefreshDate.toISOString()).format('YYYY-MM-DD HH:mm:ss.SSS')
       }).save()
-  
   
       reply.setCookie('Bearer', accessToken, getCookieOptions(expirationTokenDate))
       reply.setCookie('Refresh', refreshToken, getCookieOptions(expirationRefreshDate))

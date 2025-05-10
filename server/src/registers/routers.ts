@@ -1,12 +1,12 @@
-import { routers } from "@/build/routers"
-import { authenticator } from "@/controllers/auth"
-import { Fastify } from "@/controllers/fastify"
-import { MethodType, type GenericRouter, type ReplyKeys, type TypedReply } from "@/types/router"
-import chalk from "chalk"
-import type { FastifyReply, FastifyRequest, RouteShorthandOptions } from "fastify"
-import { glob } from "glob"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
+import { routers } from '@/build/routers'
+import { authenticator } from '@/controllers/auth'
+import { Fastify } from '@/controllers/fastify'
+import { MethodType, type GenericRouter, type ReplyKeys, type TypedReply } from '@/types/router'
+import chalk from 'chalk'
+import type { FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify'
+import { glob } from 'glob'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 export async function registerRouter () {
   if (Fastify.server === undefined) throw new Error('Server not configured!')
@@ -15,23 +15,23 @@ export async function registerRouter () {
   const routersP = isPKG
     ? routers
     : await (async () => {
-    const path = join(import.meta.dirname, '../../routers')
-    const files = await glob('**/*.ts', { cwd: path })
-    const routers: Record<string, GenericRouter> = {}
+      const path = join(import.meta.dirname, '../../routers')
+      const files = await glob('**/*.ts', { cwd: path })
+      const routers: Record<string, GenericRouter> = {}
 
-    for (const file of files) {
-      const filePath = join(path, file)
-      const { default: router } = await import(filePath) as { default: GenericRouter }
+      for (const file of files) {
+        const filePath = join(path, file)
+        const { default: router } = await import(filePath) as { default: GenericRouter }
 
-      if (router === undefined || router?.name === undefined) {
-        console.log(chalk.red(`Put export default in the route: ${filePath}`))
-        continue
+        if (router === undefined || router?.name === undefined) {
+          console.log(chalk.red(`Put export default in the route: ${filePath}`))
+          continue
+        }
+        routers[formatPath(router?.path ?? file)] = router
       }
-      routers[formatPath(router?.path ?? file)] = router
-    }
 
-    return routers
-  })()
+      return routers
+    })()
 
   for (const [path, router] of Object.entries(routersP as Record<string, GenericRouter>)) {
     router.name = router.name.replaceAll(' ', '')
@@ -100,10 +100,10 @@ export async function registerRouter () {
 
 export function formatPath (path: string) {
   path = path.replace(/\.(ts|js)$/i, '') // Remove extensões ".ts" ou ".js"
-  .replace('index', '')       // Remove "/index" para deixar "/"
-  .replace(/\([^)]*\)/g, '')  // Remove parênteses e seu conteúdo
-  .replace(/[/\\]+$/, '')     // Remove barras finais "/" ou "\"
-  .replace(/\\/g, '/')        // Converte "\" para "/"
+    .replace('index', '')       // Remove "/index" para deixar "/"
+    .replace(/\([^)]*\)/g, '')  // Remove parênteses e seu conteúdo
+    .replace(/[/\\]+$/, '')     // Remove barras finais "/" ou "\"
+    .replace(/\\/g, '/')        // Converte "\" para "/"
   // Garante que o path comece com '/'
   if (!path.startsWith('/')) path = '/' + path
   

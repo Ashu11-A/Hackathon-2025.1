@@ -1,9 +1,10 @@
 import { compare, hash } from 'bcryptjs'
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, type Relation, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, JoinTable, OneToMany, PrimaryGeneratedColumn, type Relation, UpdateDateColumn } from 'typeorm'
 import { Hidden } from '../hooks/hidden.js'
 import { Auth } from './Auth.js'
 import { Role } from '../enums.js'
-
+import { Repo } from './Repo.js'
+import { Skill } from './Skill.js'
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -24,9 +25,16 @@ export class User extends BaseEntity {
     password!: string
   @Column({ type: 'varchar', default: Role.Student, nullable: true })
     role!: Role
+  @Column({ type: 'int', nullable: true })
+    idGithub!: number
 
   @OneToMany(() => Auth, (auth) => auth.user)
     auths!: Relation<Auth[]>
+  @OneToMany(() => Repo, (repo) => repo.user)
+    repos!: Relation<Repo[]>
+  @ManyToMany(() => Skill, (skill) => skill.users)
+  @JoinTable()
+    skills!: Relation<Skill[]>
 
   @UpdateDateColumn()
     updatedAt!: Date

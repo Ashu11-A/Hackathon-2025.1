@@ -1,4 +1,4 @@
-import { Role } from '@/database/entity/User.js'
+import type { Role } from '@/database/enums'
 import { StrategyError } from '@/strategies/Base.js'
 import { type FastifyReply, type FastifyRequest } from 'fastify'
 

@@ -14,8 +14,8 @@ const getCookieOptions = (expirationDate: Date) => ({
   path: '/',
   expires: expirationDate,
   httpOnly: true,
-  secure: process.env.PRODUCTION,
-  domain: process.env.PRODUCTION ? process.env.FRONT_END_URL : undefined,
+  secure: false,// process.env.PRODUCTION,
+  domain: undefined // process.env.PRODUCTION ? process.env.FRONT_END_URL : undefined,
 })
 
 export default new Router({
@@ -41,8 +41,6 @@ export default new Router({
         const ancestors = await authTreeRepository.findAncestors(auth)
         const descendants = await authTreeRepository.findDescendants(auth)
         const nodesToRemove = Array.from([...descendants, ...ancestors])
-  
-        console.log(nodesToRemove)
   
         await authTreeRepository.remove(nodesToRemove)
         await auth.remove()

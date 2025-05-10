@@ -1,5 +1,5 @@
 export type TProcessEnv = {
-  PRODUCTION: string
+  PRODUCTION: boolean
   PORT: number
   REDIS_HOST: string
   REDIS_PORT: number
@@ -14,6 +14,10 @@ export type TProcessEnv = {
   FRONT_END_URL: string
   STORAGE_TYPE: string
   LOCAL_STORAGE_PATH: string
+  GEMINI_SDK_TOKEN: string
+  SESSION_SECRET: string
+  GH_CLIENT_ID: string
+  GH_CLIENT_SECRET: string
 }
 
 type Generic = Dict<string | number | boolean>

@@ -34,7 +34,7 @@ const Login = () => {
 
   useEffect(() => {
     if (api.isLoggedIn) {
-      navigate("/dashboard");
+      navigate("/chat");
     }
   }, [isLoggedIn, api.isLoggedIn, navigate])
 

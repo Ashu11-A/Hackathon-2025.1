@@ -1,10 +1,24 @@
 import axios from "axios";
 import Cookies from 'js-cookie';
 import { UserProfile } from "./types";
+import { Job } from "./internship";
 
 export class API {
   public isLoggedIn = false
   public options: LoginData = {
+    accessToken: {
+      token: '',
+      expireDate: new Date(),
+      expireSeconds: 0
+    },
+    refreshToken: {
+      token: '',
+      expireDate: new Date(),
+      expireSeconds: 0
+    }
+  }
+  public isLoggedInGithub = false
+  public optionsGithub: LoginData = {
     accessToken: {
       token: '',
       expireDate: new Date(),
@@ -69,8 +83,37 @@ export class API {
     return this.options
   }
 
+  async loginGithub() {
+    const result = await this.instance.post('/auth/github')
+
+    if (result.status !== 200) return null
+
+    this.isLoggedInGithub = true
+
+    this.optionsGithub = result.data.data as LoginData
+
+    // Save tokens to cookies with expiration
+    Cookies.set('auth_github', JSON.stringify(this.options), {
+      expires: new Date(this.optionsGithub.accessToken.expireDate),
+      secure: true,
+      sameSite: 'strict'
+    })
+    return this.optionsGithub
+  }
+
   async profile() {
     return await this.instance.get('/user/profile') as UserProfile
+  }
+
+  async sendMessage(message: string) {
+    const data = (await this.instance.post('/chat/send', { message })).data
+    console.log(data)
+    return data.data
+  }
+
+  async getInternships() {
+    const data = (await this.instance.post('/internship/list')).data
+    return data.data as Job[]
   }
 }
 

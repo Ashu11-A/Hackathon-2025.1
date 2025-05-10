@@ -11,7 +11,7 @@ import { getCookieOptions } from './login'
 export default new Router({
   name: 'Auth With Github',
   path: '/auth/github/callback',
-  authenticate: true,
+  // authenticate: true,
   description: '',
   methods: {
     async get({ reply, request }) {
